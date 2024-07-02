@@ -5,6 +5,7 @@ using UnityEngine;
 public class FPController : MonoBehaviour
 {
     public GameObject cam;
+    public Transform shotDirection;
     public Animator anim;
     public AudioSource[] footsteps;
     public AudioSource jump;
@@ -32,11 +33,11 @@ public class FPController : MonoBehaviour
     float z;
 
     //Inventory
-    int ammo = 0;
+    int ammo = 50;
     int maxAmmo = 50;
     int health = 0;
     int maxHealth = 100;
-    int ammoClip = 0;
+    int ammoClip = 10;
     int ammoClipMax = 10;
 
     bool playingWalking = false;
@@ -53,6 +54,31 @@ public class FPController : MonoBehaviour
         health = maxHealth;
     }
 
+    void ProcessZombieHit()
+    {
+        RaycastHit hitInfo;
+        if(Physics.Raycast(shotDirection.position, shotDirection.forward, out hitInfo, 200))
+        {
+            GameObject hitZombie = hitInfo.collider.gameObject;
+            if(hitZombie.tag == "Zombie")
+            {
+                if (Random.Range(0, 2) == 0)
+                {
+                    GameObject rdPrefab = hitZombie.GetComponent<ZombieController>().ragDoll;
+                    GameObject newRD = Instantiate(rdPrefab, hitZombie.transform.position, hitZombie.transform.rotation);
+                    newRD.transform.Find("Hips").GetComponent<Rigidbody>().AddForce(shotDirection.forward * 10000);
+                    Destroy(hitZombie);
+                }
+                else
+                {
+                    hitZombie.GetComponent<ZombieController>().KillZombie();
+                }
+
+
+
+            }
+        }
+    }
     // Update is called once per frame
     void Update()
     {
@@ -65,6 +91,7 @@ public class FPController : MonoBehaviour
             {
                 anim.SetTrigger("fire");
                 ammoClip--;
+                ProcessZombieHit();
             }
             else if (anim.GetBool("arm"))
                 triggerSound.Play();

@@ -17,6 +17,7 @@ public class ZombieController : MonoBehaviour
 
 
 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -51,27 +52,17 @@ public class ZombieController : MonoBehaviour
         return false;
     }    
 
+    public void KillZombie()
+    {
+        TurnOffTriggers();
+        anim.SetBool("isDead", true);
+        state = STATE.DEAD;
+    }
 
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.P))
-        {
-            if (Random.Range(0, 2) == 0)
-            {
-                TurnOffTriggers();
-                anim.SetBool("isDead", true);
-                state = STATE.DEAD;
-            }
-            else
-            {
-                GameObject rd = Instantiate(ragDoll, this.transform.position, this.transform.rotation);
-                rd.transform.Find("Hips").GetComponent<Rigidbody>().AddForce(Camera.main.transform.forward * 10000);
-                Destroy(this.gameObject);
-            }
-            return;
-        }
         if(target == null)
         {
             target = GameObject.FindWithTag("Player");
@@ -134,6 +125,8 @@ public class ZombieController : MonoBehaviour
 
                 break;
            case STATE.DEAD:
+                Destroy(agent);
+                this.GetComponent<Sink>().StartSink();
                break;
         }
 

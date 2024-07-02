@@ -1,0 +1,16 @@
+﻿<Properties StartupConfiguration="{01373E1E-D4F9-438C-1190-F789909FF721}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Zombies/Sink.cs">
+    <Files>
+      <File FileName="Assets/Steve/FPController.cs" Line="51" Column="31" />
+      <File FileName="Assets/Zombies/ZombieController.cs" Line="6" Column="25" />
+      <File FileName="Assets/Zombies/Sink.cs" Line="22" Column="54" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="fc59b046-efd0-471e-8614-75da2d7b63fb" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
