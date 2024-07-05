@@ -10,6 +10,7 @@ public class ZombieController : MonoBehaviour
     NavMeshAgent agent;
     public float walkingSpeed;
     public float runningSpeed;
+    public float damageAmount = 5;
     public GameObject ragDoll;
 
     enum STATE { IDLE, WANDER, ATTACK, CHASE, DEAD };
@@ -21,13 +22,27 @@ public class ZombieController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
         anim = this.GetComponent<Animator>();
+        if (anim == null)
+        {
+            Debug.LogError("Animator component is missing on " + gameObject.name);
+        }
+
         agent = this.GetComponent<NavMeshAgent>();
+        if (agent == null)
+        {
+            Debug.LogError("NavMeshAgent component is missing on " + gameObject.name);
+        }
     }
 
     void TurnOffTriggers()
     {
+        if (anim == null)
+        {
+            Debug.LogError("Animator component is not found on " + gameObject.name);
+            return;
+        }
+
         anim.SetBool("isWalking", false);
         anim.SetBool("isAttacking", false);
         anim.SetBool("isRunning", false);
@@ -36,6 +51,7 @@ public class ZombieController : MonoBehaviour
 
     float DistanceToPlayer()
     {
+        if (GameStats.gameOver) return Mathf.Infinity;
         return Vector3.Distance(target.transform.position, this.transform.position);
     }
     bool CanSeePlayer()
@@ -59,11 +75,19 @@ public class ZombieController : MonoBehaviour
         state = STATE.DEAD;
     }
 
+    public void DamagePlayer()
+    {
+        if(target != null)
+        {
+            target.GetComponent<FPController>().TakeHit(damageAmount);
+            target.GetComponent<FPController>().PlaySplatAudio();
+        } 
+    }
 
     // Update is called once per frame
     void Update()
     {
-        if(target == null)
+        if(target == null && GameStats.gameOver == false)
         {
             target = GameObject.FindWithTag("Player");
             return;
@@ -98,6 +122,7 @@ public class ZombieController : MonoBehaviour
                 }
                 break;
             case STATE.CHASE:
+                if (GameStats.gameOver) { TurnOffTriggers(); state = STATE.WANDER; return; }
                 agent.SetDestination(target.transform.position);
                 agent.stoppingDistance = 5;
                 TurnOffTriggers();
@@ -116,6 +141,7 @@ public class ZombieController : MonoBehaviour
                 }
               break;
            case STATE.ATTACK:
+                if (GameStats.gameOver) { TurnOffTriggers(); state = STATE.WANDER; return; }
                 TurnOffTriggers();
                 anim.SetBool("isAttacking", true);
                 this.transform.LookAt(target.transform.position);

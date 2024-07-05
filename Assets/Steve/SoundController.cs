@@ -23,4 +23,13 @@ public class SoundController : MonoBehaviour
         shot.Play();
     }
 
+    public void canShoot()
+    {
+        GameStats.canShoot = true;
+    }
+
+    public void cannotShoot()
+    {
+        GameStats.canShoot = false;
+    }
 }
