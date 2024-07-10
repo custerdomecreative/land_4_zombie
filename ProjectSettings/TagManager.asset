@@ -8,6 +8,7 @@ TagManager:
   - Ragdoll
   - Home
   - MedKit
+  - Ammo
   layers:
   - Default
   - TransparentFX
@@ -18,7 +19,7 @@ TagManager:
   - 
   - 
   - Zombie
-  - 
+  - Post Processing
   - 
   - 
   - 

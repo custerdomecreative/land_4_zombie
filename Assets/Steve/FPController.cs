@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class FPController : MonoBehaviour
 {
     public GameObject stevePrefab;
     public GameObject homeCube;
     public GameObject cam;
+    public GameObject bloodPrefab;
+    public GameObject uiBloodPrefab;
+    public GameObject canvas;
     public Slider healthBar;
     public Text ammoReserves;
     public Text ammoInGun;
@@ -28,6 +32,10 @@ public class FPController : MonoBehaviour
     float Ysensitivity = 2;
     float MinimumX = -90;
     float MaximumX = 90;
+
+    float cWidth;
+    float cHeight;
+
     Rigidbody rb;
     CapsuleCollider capsule;
     Quaternion cameraRot;
@@ -57,6 +65,13 @@ public class FPController : MonoBehaviour
         health = (int) Mathf.Clamp(health - amount, 0, maxHealth);
         healthBar.value = health;
         Debug.Log("Health" + health);
+
+        GameObject bloodSpatter = Instantiate(uiBloodPrefab);
+        bloodSpatter.transform.SetParent(canvas.transform);
+        bloodSpatter.transform.position = new Vector3(Random.Range(0, cWidth), Random.Range(0, cHeight), 0);
+
+        Destroy(bloodSpatter, 3.2f);
+
         if(health <=0)
         {
             Vector3 pos = new Vector3(this.transform.position.x, Terrain.activeTerrain.SampleHeight(this.transform.position), this.transform.position.z);
@@ -105,6 +120,10 @@ public class FPController : MonoBehaviour
 
         ammoReserves.text = ammo + "";
         ammoInGun.text = ammoClip + "";
+
+        cWidth = canvas.GetComponent<RectTransform>().rect.width;
+        cHeight = canvas.GetComponent<RectTransform>().rect.height;
+
     }
 
     void ProcessZombieHit()
@@ -115,11 +134,16 @@ public class FPController : MonoBehaviour
             GameObject hitZombie = hitInfo.collider.gameObject;
             if(hitZombie.tag == "Zombie")
             {
+                GameObject blood = Instantiate(bloodPrefab, hitInfo.point, Quaternion.identity);
+                blood.transform.LookAt(this.transform.position);
+                Destroy(blood, 1f);
+
                 if (Random.Range(0, 2) == 0)
                 {
                     GameObject rdPrefab = hitZombie.GetComponent<ZombieController>().ragDoll;
                     GameObject newRD = Instantiate(rdPrefab, hitZombie.transform.position, hitZombie.transform.rotation);
                     newRD.transform.Find("Hips").GetComponent<Rigidbody>().AddForce(shotDirection.forward * 10000);
+
                     Destroy(hitZombie);
                 }
                 else
@@ -324,7 +348,7 @@ public class FPController : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Escape))
             cursorIsLocked = false;
-        else if (Input.GetMouseButtonUp(0))
+        else if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject())
             cursorIsLocked = true;
 
         if (cursorIsLocked)
